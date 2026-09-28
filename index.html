@@ -656,36 +656,44 @@
     position:relative; overflow:hidden; isolation:isolate;
     max-width:1400px; margin:-16px auto 38px;
     height:calc(100vh - 150px); height:calc(100dvh - 150px); min-height:520px;
-    border-radius:22px; background:#000;
-    box-shadow:0 18px 50px rgba(13,24,168,.18);
-    color:#fff; text-align:center;
+    border-radius:22px; background:#fff;
+    border:1px solid var(--border);
+    box-shadow:0 18px 50px rgba(13,24,168,.08);
+    color:var(--text); text-align:center;
   }
-  [data-theme="dark"] #zx-hero{ box-shadow:0 0 0 1px rgba(255,255,255,.06); }
+  [data-theme="dark"] #zx-hero{ background:#000; border-color:rgba(255,255,255,.06); box-shadow:none; color:#fff; }
   #zx-hero-gl{ position:absolute; inset:0; width:100%; height:100%; z-index:2; pointer-events:none; display:block; }
   .zx-orbit{ position:absolute; inset:0; pointer-events:none; }
   #zx-orbit-back{ z-index:1; } #zx-orbit-front{ z-index:3; }
   .zx-pill{
     position:absolute; left:0; top:0; display:inline-flex; align-items:center; gap:9px;
     padding:15px 26px; border-radius:999px; max-width:260px;
-    background:rgba(22,26,44,.58); border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.78); border:1px solid rgba(13,24,168,.12);
+    box-shadow:0 8px 22px rgba(13,24,168,.10);
     -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
-    color:#fff; font:500 14.5px/1.2 'Poppins','Segoe UI',-apple-system,sans-serif; white-space:nowrap;
+    color:#1c2233; font:500 14.5px/1.2 'Poppins','Segoe UI',-apple-system,sans-serif; white-space:nowrap;
     cursor:pointer; opacity:0; pointer-events:auto; will-change:transform,opacity;
     transition:border-color .3s, background-color .3s;
   }
   .zx-pill span.lbl{ overflow:hidden; text-overflow:ellipsis; }
-  .zx-pill .ico{ width:17px; height:17px; flex-shrink:0; color:#7fb4ff; display:flex; }
+  .zx-pill .ico{ width:17px; height:17px; flex-shrink:0; color:var(--zx-blue); display:flex; }
   .zx-pill .ico svg{ width:100%; height:100%; }
-  .zx-pill:hover, .zx-pill:focus-visible{ border-color:var(--zx-blue); background:rgba(13,24,168,.55); outline:none; }
+  .zx-pill:hover, .zx-pill:focus-visible{ border-color:var(--zx-blue); background:#eef4ff; color:var(--zx-blue-dark); outline:none; }
+  [data-theme="dark"] .zx-pill{ background:rgba(22,26,44,.58); border-color:rgba(255,255,255,.14); box-shadow:none; color:#fff; }
+  [data-theme="dark"] .zx-pill .ico{ color:#7fb4ff; }
+  [data-theme="dark"] .zx-pill:hover, [data-theme="dark"] .zx-pill:focus-visible{ background:rgba(13,24,168,.55); color:#fff; }
   #zx-hero-copy{ position:absolute; top:34px; left:0; right:0; z-index:4; pointer-events:none; padding:0 24px; }
-  #zx-hero-copy h1{ color:#fff; font-size:clamp(22px,2.4vw,32px); font-weight:700; margin:0 0 8px; letter-spacing:-.01em; }
-  #zx-hero-copy #home-tagline{ color:rgba(255,255,255,.62); margin:0; }
+  #zx-hero-copy h1{ color:var(--zx-blue-dark); font-size:clamp(22px,2.4vw,32px); font-weight:700; margin:0 0 8px; letter-spacing:-.01em; }
+  #zx-hero-copy #home-tagline{ color:var(--muted); margin:0; }
+  [data-theme="dark"] #zx-hero-copy h1{ color:#fff; }
+  [data-theme="dark"] #zx-hero-copy #home-tagline{ color:rgba(255,255,255,.62); }
   #zx-hero-hint{
     position:absolute; left:26px; bottom:22px; z-index:4; display:flex; align-items:center; gap:10px;
-    background:none; border:0; color:rgba(255,255,255,.7); font:400 13px 'Poppins','Segoe UI',sans-serif; cursor:pointer; padding:6px 4px;
+    background:none; border:0; color:var(--muted); font:400 13px 'Poppins','Segoe UI',sans-serif; cursor:pointer; padding:6px 4px;
   }
-  #zx-hero-hint:hover{ color:#fff; }
-  #zx-hero-hint i{ display:block; width:1px; height:30px; background:linear-gradient(rgba(255,255,255,.8),transparent); transform-origin:top; animation:zxDrip 2.2s ease-in-out infinite; }
+  #zx-hero-hint:hover{ color:var(--zx-blue-dark); }
+  [data-theme="dark"] #zx-hero-hint:hover{ color:#fff; }
+  #zx-hero-hint i{ display:block; width:1px; height:30px; background:linear-gradient(currentColor,transparent); transform-origin:top; animation:zxDrip 2.2s ease-in-out infinite; }
   @keyframes zxDrip{ 0%{transform:scaleY(0)} 50%{transform:scaleY(1)} 100%{transform:scaleY(1);opacity:0} }
   @media (max-width:760px){
     #zx-hero{ border-radius:16px; min-height:480px; }
@@ -2303,11 +2311,20 @@ cargarAvisos();
   camera.lookAt(LOOK);
 
   const U = { uTime:{value:0}, uProgress:{value:reduce?1:0}, uScatter:{value:0}, uPR:{value:PR},
-    uMouse:{value:new THREE.Vector3(99,99,0)}, uScale:{value:3}, uLetY:{value:LET_Y}, uWaterY:{value:WATER_Y}, uTop:{value:0} };
-  const frag = `varying vec3 vColor; varying float vAlpha;
-    void main(){ float d=length(gl_PointCoord-.5); float a=1.-smoothstep(0.,.5,d); a*=a;
-      gl_FragColor=vec4(vColor*a*vAlpha, a*vAlpha); }`;
-  const mat = vs => new THREE.ShaderMaterial({uniforms:U, vertexShader:vs, fragmentShader:frag, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending});
+    uMouse:{value:new THREE.Vector3(99,99,0)}, uScale:{value:3}, uLetY:{value:LET_Y}, uWaterY:{value:WATER_Y}, uTop:{value:0}, uDark:{value:0} };
+  // Fondo blanco: mezcla normal con azules profundos. Tema oscuro: luz aditiva.
+  const frag = `uniform float uDark; varying vec3 vColor; varying float vAlpha;
+    void main(){ float d=length(gl_PointCoord-.5); float a=1.-smoothstep(0.,.5,d);
+      if(uDark>.5){ a*=a; gl_FragColor=vec4(vColor*a*vAlpha, a*vAlpha); }
+      else { a=smoothstep(0.,.35,a); gl_FragColor=vec4(vColor, a*vAlpha); } }`;
+  const mats = [];
+  const mat = vs => { const m = new THREE.ShaderMaterial({uniforms:U, vertexShader:vs, fragmentShader:frag, transparent:true, depthWrite:false, blending:THREE.NormalBlending}); mats.push(m); return m; };
+  function aplicarTema(){
+    const dark = document.body.getAttribute('data-theme') === 'dark';
+    U.uDark.value = dark ? 1 : 0;
+    mats.forEach(m => { m.blending = dark ? THREE.AdditiveBlending : THREE.NormalBlending; m.needsUpdate = true; });
+  }
+  new MutationObserver(aplicarTema).observe(document.body, {attributes:true, attributeFilter:['data-theme']});
   function puntos(n, attrs, vs){
     const g = new THREE.BufferGeometry();
     for (const k in attrs) g.setAttribute(k, new THREE.BufferAttribute(attrs[k].a, attrs[k].s));
@@ -2327,7 +2344,7 @@ cargarAvisos();
       sd[i]=Math.random(); dl[i]=(y/LET_H+0.5)*0.35 + Math.random()*0.12;
     }
     puntos(N, {position:{a:pos,s:3}, aStart:{a:st,s:3}, aSeed:{a:sd,s:1}, aDelay:{a:dl,s:1}}, `
-      uniform float uTime,uProgress,uScatter,uPR,uScale,uLetY; uniform vec3 uMouse;
+      uniform float uTime,uProgress,uScatter,uPR,uScale,uLetY,uDark; uniform vec3 uMouse;
       attribute vec3 aStart; attribute float aSeed; attribute float aDelay;
       varying vec3 vColor; varying float vAlpha;
       void main(){
@@ -2343,17 +2360,17 @@ cargarAvisos();
         p+=normalize(p-vec3(0.,uLetY,0.)+1e-4)*uScatter*(.6+aSeed*2.6);
         vec4 mv=modelViewMatrix*vec4(p,1.); gl_Position=projectionMatrix*mv;
         float tw=.7+.3*sin(t*2.3+aSeed*90.);
-        gl_PointSize=24.*uPR*(.5+aSeed*.9)*tw/-mv.z;
+        gl_PointSize=mix(15.,24.,uDark)*uPR*(.5+aSeed*.9)*tw/-mv.z;
         vColor=mix(vec3(.051,.094,.659),vec3(.133,.494,.965),smoothstep(.15,.85,aSeed));
-        if(aSeed>.93) vColor=vec3(.72,.85,1.);
-        vAlpha=(.35+.9*k)*(1.-uScatter*.75);
+        if(aSeed>.93) vColor=mix(vec3(.02,.04,.36),vec3(.72,.85,1.),uDark);
+        vAlpha=mix(.28+.5*k, .35+.9*k, uDark)*(1.-uScatter*.75);
       }`);
   }
   // Agua
   { const N = small ? 24000 : 42000, pos=new Float32Array(N*3), sd=new Float32Array(N);
     for (let i=0;i<N;i++){ const r=Math.sqrt(Math.random())*7.5, a=Math.random()*TAU; pos.set([Math.cos(a)*r,0,Math.sin(a)*r], i*3); sd[i]=Math.random(); }
     puntos(N, {position:{a:pos,s:3}, aSeed:{a:sd,s:1}}, `
-      uniform float uTime,uPR,uWaterY,uProgress,uScatter; attribute float aSeed;
+      uniform float uTime,uPR,uWaterY,uProgress,uScatter,uDark; attribute float aSeed;
       varying vec3 vColor; varying float vAlpha;
       void main(){
         vec3 p=position; float r=length(p.xz), ang=atan(p.z,p.x);
@@ -2361,34 +2378,34 @@ cargarAvisos();
         float w=sin(rr*5.2-uTime*1.7), ring=pow(.5+.5*w,10.), fall=1.-smoothstep(.25,7.5,r);
         p.y=uWaterY+w*.035*fall;
         vec4 mv=modelViewMatrix*vec4(p,1.); gl_Position=projectionMatrix*mv;
-        gl_PointSize=21.*uPR*(.5+aSeed)/-mv.z;
-        vColor=mix(vec3(.2,.55,1.),vec3(.051,.094,.659),smoothstep(.8,6.,r));
-        vAlpha=(.08+ring*1.7)*fall*smoothstep(0.,.5,uProgress)*(1.-uScatter*.8);
+        gl_PointSize=mix(15.,21.,uDark)*uPR*(.5+aSeed)/-mv.z;
+        vColor=mix(mix(vec3(.051,.094,.659),vec3(.133,.494,.965),smoothstep(.5,5.,r)), mix(vec3(.2,.55,1.),vec3(.051,.094,.659),smoothstep(.8,6.,r)), uDark);
+        vAlpha=mix(.04+ring*1.0, .08+ring*1.7, uDark)*fall*smoothstep(0.,.5,uProgress)*(1.-uScatter*.8);
       }`);
   }
   // Chorro que sube del agua a las letras
   { const N = small ? 1600 : 3000, pos=new Float32Array(N*3), sd=new Float32Array(N);
     for (let i=0;i<N;i++){ const a=Math.random()*TAU, r=Math.sqrt(Math.random()); pos.set([Math.cos(a)*r,Math.sin(a)*r,0], i*3); sd[i]=Math.random(); }
     puntos(N, {position:{a:pos,s:3}, aSeed:{a:sd,s:1}}, `
-      uniform float uTime,uPR,uWaterY,uTop,uProgress,uScatter; attribute float aSeed;
+      uniform float uTime,uPR,uWaterY,uTop,uProgress,uScatter,uDark; attribute float aSeed;
       varying vec3 vColor; varying float vAlpha;
       void main(){
         float f=fract(aSeed*13.7+uTime*(.1+aSeed*.12)), w=mix(.05,.6,f*f);
         vec3 p=vec3(position.x*w+sin(f*6.+aSeed*20.)*.04, mix(uWaterY,uTop,f), position.y*w*.5);
         vec4 mv=modelViewMatrix*vec4(p,1.); gl_Position=projectionMatrix*mv;
-        gl_PointSize=22.*uPR*(.5+aSeed*.8)/-mv.z;
-        vColor=mix(vec3(.6,.8,1.),vec3(.133,.494,.965),f);
-        vAlpha=sin(f*3.14159)*1.2*smoothstep(.45,.9,uProgress)*(1.-uScatter);
+        gl_PointSize=mix(15.,22.,uDark)*uPR*(.5+aSeed*.8)/-mv.z;
+        vColor=mix(mix(vec3(.133,.494,.965),vec3(.051,.094,.659),f), mix(vec3(.6,.8,1.),vec3(.133,.494,.965),f), uDark);
+        vAlpha=sin(f*3.14159)*mix(.7,1.2,uDark)*smoothstep(.45,.9,uProgress)*(1.-uScatter);
       }`);
   }
   // Estrellas
   { const N=1200, pos=new Float32Array(N*3), sd=new Float32Array(N);
     for (let i=0;i<N;i++){ pos.set([(Math.random()-.5)*30, Math.random()*12-2.5, -3-Math.random()*12], i*3); sd[i]=Math.random(); }
     puntos(N, {position:{a:pos,s:3}, aSeed:{a:sd,s:1}}, `
-      uniform float uTime,uPR; attribute float aSeed; varying vec3 vColor; varying float vAlpha;
+      uniform float uTime,uPR,uDark; attribute float aSeed; varying vec3 vColor; varying float vAlpha;
       void main(){ vec4 mv=modelViewMatrix*vec4(position,1.); gl_Position=projectionMatrix*mv;
-        gl_PointSize=18.*uPR*(.4+aSeed)/-mv.z; vColor=mix(vec3(.5,.62,1.),vec3(1.),aSeed);
-        vAlpha=(.25+.45*sin(uTime*(.6+aSeed)+aSeed*50.))*.8; }`);
+        gl_PointSize=18.*uPR*(.4+aSeed)/-mv.z; vColor=mix(vec3(.133,.494,.965),mix(vec3(.5,.62,1.),vec3(1.),aSeed),uDark);
+        vAlpha=(.25+.45*sin(uTime*(.6+aSeed)+aSeed*50.))*mix(.35,.8,uDark); }`);
   }
 
   // ---- Órbita de apps ----
@@ -2487,6 +2504,7 @@ cargarAvisos();
     layoutOrbit(intro*Math.max(0, 1-U.uScatter.value*1.6));
     renderer.render(scene, camera);
   }
+  aplicarTema();
   resize();
   requestAnimationFrame(frame);
 })();
